@@ -1,12 +1,15 @@
-#' Saucy
+#' Searching for Automorphisms in Underlying CNF, yes?
 #'
-#' @param path path
-#' @param mode mode
-#' @param timeout timeout
-#' @param rpt repeat
+#' @md
+#' @param path file with graph
+#' @param mode using `""` auto-chooses
+#' @param timeout timeout (Default: 0)
+#' @param rpt repeat (mostly for benchmarking)
+#' @references [source](https://github.com/andandandand/saucy-repo/blob/master/saucy.c)
 #' @export
 #' @examples
 #' saucy::saucy(system.file("extdata", "graphfile", package="saucy"))
+#' saucy::saucy(system.file("extdata", "graphfile2", package="saucy"))
 saucy <- function(path, mode = c("", "cnf", "digraph", "shatter"),
                   timeout = 0, rpt = 1) {
 
@@ -18,7 +21,6 @@ saucy <- function(path, mode = c("", "cnf", "digraph", "shatter"),
   tf <- tempfile()
   tfc <- file(tf, open="wt")
   sink(tfc)
-  sink(tfc, type="message")
   ret <- saucy_int(path, mode, timeout, rpt)
   sink()
 

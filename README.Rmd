@@ -20,6 +20,8 @@ I just wrapped code. http://vlsicad.eecs.umich.edu/BK/SAUCY for orig ref. The fo
 
 ## What's Inside The Tin
 
+
+
 The following functions are implemented:
 
 ## Installation
@@ -42,3 +44,25 @@ packageVersion("saucy")
 
 ```
 
+### Saucy
+
+Graph 1 (from example files)
+
+```{r}
+graph1 <- saucy::saucy(system.file("extdata", "graphfile", package="saucy"))
+
+graph1
+
+str(graph1)
+
+```
+
+Graph 2 (from example files)
+
+```{r}
+graph2 <- saucy::saucy(system.file("extdata", "graphfile2", package="saucy"))
+
+graph2
+
+str(graph2)
+```
