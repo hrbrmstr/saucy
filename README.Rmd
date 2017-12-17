@@ -1,0 +1,44 @@
+---
+output: rmarkdown::github_document
+---
+
+# saucy
+
+Fast Symmetry Discovery Tool for Sparse Graphs
+
+## Description
+
+Many computational tools have recently begun to benefit from the use of the symmetry inherent in the tasks they solve, and use general-purpose graph symmetry tools to uncover this symmetry. Common applications include organic chemistry, constraint solvers, logistics, optimization, bio-informatics, and finite group theory. However, older symmetry-finding tools often suffer quadratic runtime (or worse!) in the number of symmetries explicitly returned and are therefore of limited use on very large, sparse, symmetric graphs. Over the last 10+ years, we developed a symmetry-discovery algorithm which exploits the sparsity present not only in the input but also the output, i.e., the symmetry generators themselves. By avoiding quadratic runtime on large graphs, it improved state-of-the-art runtimes from several days to less than a second. Recent improvements to our algorithm include additional pruning that quickly solves the hard Miyazaki graphs. 
+
+## NOTE
+
+I just wrapped code. http://vlsicad.eecs.umich.edu/BK/SAUCY for orig ref. The following are the authors of the core C "library":
+
+* Paul T. Darga <pdarga@umich.edu>
+* Mark Liffiton <liffiton@umich.edu>
+* Hadi Katebi <hadik@eecs.umich.edu>
+
+## What's Inside The Tin
+
+The following functions are implemented:
+
+## Installation
+
+```{r eval=FALSE}
+devtools::install_github("hrbrmstr/saucy")
+```
+
+```{r message=FALSE, warning=FALSE, error=FALSE, include=FALSE}
+options(width=120)
+```
+
+## Usage
+
+```{r message=FALSE, warning=FALSE, error=FALSE}
+library(saucy)
+
+# current verison
+packageVersion("saucy")
+
+```
+

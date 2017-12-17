@@ -1,0 +1,3 @@
+PKG_CXXFLAGS = -I.
+PKG_CPPFLAGS = -I.
+PKG_LIBS = -lz -L.

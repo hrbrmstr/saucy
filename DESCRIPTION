@@ -1,0 +1,41 @@
+Package: saucy
+Type: Package
+Title: Fast Symmetry Discovery Tool for Sparse Graphs
+Version: 0.1.0
+Date: 2017-12-17
+Authors@R: c(
+    person("Bob", "Rudis", email = "bob@rud.is", role = c("aut", "cre"), 
+           comment = c(ORCID = "0000-0001-5670-2640")),
+    person("Paul", "Darga", email = "pdarga@umich.edu", role = c("aut")), 
+    person("Mark", "Liffiton", email = "liffiton@umich.edu", role = c("aut")), 
+    person("Hadi", "Katebi", email = "hadik@eecs.umich.edu", role=c("aut"))
+  )
+Author: Bob Rudis (bob@rud.is)
+Maintainer: Bob Rudis <bob@rud.is>
+Description: Many computational tools have recently begun to benefit from the use of 
+    the symmetry inherent in the tasks they solve, and use general-purpose graph symmetry 
+    tools to uncover this symmetry. Common applications include organic chemistry, 
+    constraint solvers, logistics, optimization, bio-informatics, and finite group theory. 
+    However, older symmetry-finding tools often suffer quadratic runtime (or worse!) in 
+    the number of symmetries explicitly returned and are therefore of limited use on very 
+    large, sparse, symmetric graphs. Over the last 10+ years, we developed a symmetry-
+    discovery algorithm which exploits the sparsity present not only in the input but also 
+    the output, i.e., the symmetry generators themselves. By avoiding quadratic runtime on 
+    large graphs, it improved state-of-the-art runtimes from several days to less than a 
+    second. Recent improvements to our algorithm include additional pruning that quickly 
+    solves the hard Miyazaki graphs. 
+URL: https://github.com/hrbrmstr/saucy
+BugReports: https://github.com/hrbrmstr/saucy/issues
+License: MIT + file LICENSE
+Copyright: file inst/COPYRIGHTS
+SystemRequirements: zlib
+Suggests:
+    testthat,
+    covr
+Depends:
+    R (>= 3.2.0)
+Imports:
+    purrr,
+    Rcpp
+RoxygenNote: 6.0.1
+LinkingTo: Rcpp
