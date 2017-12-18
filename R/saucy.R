@@ -5,7 +5,7 @@
 #' @param mode using `""` auto-chooses
 #' @param timeout timeout (Default: 0)
 #' @param rpt repeat (mostly for benchmarking)
-#' @references [source](https://github.com/andandandand/saucy-repo/blob/master/saucy.c)
+#' @references [Saucy](http://vlsicad.eecs.umich.edu/BK/SAUCY/)
 #' @export
 #' @examples
 #' saucy::saucy(system.file("extdata", "graphfile", package="saucy"))
@@ -24,7 +24,9 @@ saucy <- function(path, mode = c("", "cnf", "digraph", "shatter"),
   ret <- saucy_int(path, mode, timeout, rpt)
   sink()
 
-  x <- readLines(tf)
+  x <- readLines(tf, warn = FALSE)
+
+  close(tfc)
   unlink(tf)
 
   ret$printed_output <- x

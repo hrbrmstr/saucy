@@ -33,6 +33,9 @@ ref. The following are the authors of the core C “library”:
 
 The following functions are implemented:
 
+  - `saucy`: Searching for Automorphisms in Underlying CNF, yes?
+  - `shatter`: Identifies Symmetries in CNF Instances
+
 ## Installation
 
 ``` r
@@ -143,3 +146,61 @@ str(graph2)
     ##  $ bad_nodes          : int 0
     ##  $ printed_output     : chr [1:4] "(3 5)" "(3 6)(4 5)" "(0 1)" "(0 2)"
     ##  - attr(*, "class")= chr [1:2] "saucy" "list"
+
+### Shatter
+
+``` r
+s1 <- saucy::shatter(system.file("extdata", "battleship.cnf", package="saucy"))
+
+s1
+```
+
+    ##                    input_file: battleship.cnf
+    ##                      vertices: 105
+    ##                         edges: 320
+    ##               group_size_base: 1.6
+    ##                group_size_exp: 3
+    ##                         nodes: 236
+    ##                    generators: 6
+    ##                     bad_nodes: 151
+    ##                discovery_time: 0.000816
+    ##     symmetry_breaking_clauses: 396
+    ##          additional_variables: 102
+    ##           additional_literals: 1362
+    ##        consistency_violations: 0
+    ##           sbp_generation_time: 0.000252
+    ##                    total_time: 0.001068
+    ##                     variables: 40
+    ##                       clauses: 105
+    ##            non_binary_clauses: 25
+    ##                      literals: 360
+    ##  symmetry_breaking_predicates: 293 symmetry breaking predicates
+    ##                printed_output: character(0)
+
+``` r
+str(s1)
+```
+
+    ## List of 21
+    ##  $ input_file                  : chr "/Library/Frameworks/R.framework/Versions/3.4/Resources/library/saucy/extdata/battleship.cnf"
+    ##  $ vertices                    : int 105
+    ##  $ edges                       : int 320
+    ##  $ group_size_base             : num 1.6
+    ##  $ group_size_exp              : int 3
+    ##  $ nodes                       : int 236
+    ##  $ generators                  : int 6
+    ##  $ bad_nodes                   : int 151
+    ##  $ discovery_time              : num 0.000816
+    ##  $ symmetry_breaking_clauses   : int 396
+    ##  $ additional_variables        : int 102
+    ##  $ additional_literals         : int 1362
+    ##  $ consistency_violations      : int 0
+    ##  $ sbp_generation_time         : num 0.000252
+    ##  $ total_time                  : num 0.00107
+    ##  $ variables                   : num 40
+    ##  $ clauses                     : num 105
+    ##  $ non_binary_clauses          : num 25
+    ##  $ literals                    : num 360
+    ##  $ symmetry_breaking_predicates: chr [1:293] "-6 31 0" "41 0" "-41 -6 -7 32 0" "-41 -6 42 0" ...
+    ##  $ printed_output              : chr(0) 
+    ##  - attr(*, "class")= chr [1:2] "shatter" "list"

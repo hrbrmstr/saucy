@@ -5,7 +5,7 @@
  * by Paul T. Darga <pdarga@umich.edu>
  * and Mark Liffiton <liffiton@umich.edu>
  * and Hadi Katebi <hadik@eecs.umich.edu>
- * 
+ *
  * Copyright (C) 2004, The Regents of the University of Michigan
  * See the LICENSE file for details.
  */
@@ -33,7 +33,7 @@ struct saucy {
 
 	/* Coloring data */
 	struct coloring left, right;
-	int *nextnon;    /* Forward next-nonsingleton pointers */ 
+	int *nextnon;    /* Forward next-nonsingleton pointers */
 	int *prevnon;    /* Backward next-nonsingleton pointers */
 
 	/* Refinement: inducers */
@@ -1309,7 +1309,7 @@ backtrack_bad(struct saucy *s)
 {
 	int min, old, tmp;
 	old = s->lev;
-	min = backtrack_loop(s);	
+	min = backtrack_loop(s);
 	tmp = s->nsplits;
 	s->nsplits = s->splitlev[old];
 	rewind_coloring(s, &s->left, s->lev+1);
@@ -1354,7 +1354,7 @@ do_search(struct saucy *s)
 	/* Keep going while there are tree nodes to expand */
 	while (s->lev) {
 
-		/* Descend to a new leaf node */	
+		/* Descend to a new leaf node */
 		if (descend(s, &s->right, s->start[s->lev], min)
 				&& descend_left(s)) {
 
@@ -1387,16 +1387,10 @@ do_search(struct saucy *s)
 	return 0;
 }
 
-void
-saucy_search(
-	struct saucy *s,
-	const struct saucy_graph *g,
-	int directed,
-	const int *colors,
-	saucy_consumer *consumer,
-	void *arg,
-	struct saucy_stats *stats)
-{
+void saucy_search(struct saucy *s, const struct saucy_graph *g, int directed,
+                  const int *colors, saucy_consumer *consumer, void *arg,
+                  struct saucy_stats *stats) {
+
 	int i, j, max = 0;
 
 	/* Save client information */

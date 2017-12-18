@@ -10,6 +10,7 @@
  * symmetry-breaking predicates (that is, no powers or other
  * enumeration).
  */
+#include <Rcpp.h>
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -20,6 +21,8 @@
 #include "util.h"
 #include "platform.h"
 
+using namespace Rcpp;
+
 static const char *sbpfile;
 static int *p;
 static int *supp;
@@ -29,57 +32,18 @@ static int vars;
 static int clauses;
 static int literals;
 static char *marks;
-static int stats_mode;
-static int quiet_mode;
 static int violations;
 static long shatter_time;
 
-static void arg_sbpfile(char *arg) { sbpfile = arg; }
-static void arg_stats(char *arg) { stats_mode = 1; }
-static void arg_quiet(char *arg) { quiet_mode = 1; }
-
-static void arg_help(char *arg);
-
-static void arg_version(char *arg)
-{
-	fprintf(stderr, "shatter (saucy) %s\n", SAUCY_VERSION);
-	exit(0);
-}
-
-static struct option options[] = {
-	{ "sbpfile", 'o', "FILE", arg_sbpfile,
-	"put symmetry breaking predicates in FILE" },
-	{ "stats", 's', 0, arg_stats, "print statistics after execution" },
-	{ "quiet", 'q', 0, arg_quiet,
-	"don't output final CNF formula (for use with -s or -o)" },
-	{ "help", 0, 0, arg_help, "print this help message" },
-	{ "version", 0, 0, arg_version, "version information" },
-	{ 0, 0, 0, 0, 0 }
-};
-
-static void
-arg_help(char *arg)
-{
-	fprintf(stderr, "usage: shatter [OPTION...] FILE\n");
-	print_options(options);
-	exit(0);
-}
-
-static int
-name(int k)
-{
+static int name(int k) {
 	return k >= orig_vars ? k - orig_vars : k;
 }
 
-static int
-negate(int k)
-{
+static int negate(int k) {
 	return k >= orig_vars ? k - orig_vars : k + orig_vars;
 }
 
-static void
-clause(int x, ...)
-{
+static void clause(int x, ...) {
 	va_list args;
 	va_start(args, x);
 
@@ -94,9 +58,7 @@ clause(int x, ...)
 	++clauses;
 }
 
-static int
-shatter(int n, const int *perm, int nsupp, int *support, void *arg)
-{
+static int shatter(int n, const int *perm, int nsupp, int *support, void *arg) {
 	int i, ns, j, k, x, z, big;
 
 	/* Boolean consistency check */
@@ -202,125 +164,91 @@ shatter(int n, const int *perm, int nsupp, int *support, void *arg)
 	return 1;
 }
 
-static int
-time_shatter(int n, const int *perm, int nsupp, int *support, void *arg)
-{
+static int time_shatter(int n, const int *perm, int nsupp, int *support, void *arg) {
 	long cpu_time = platform_clock();
 	int ret = shatter(n, perm, nsupp, support, arg);
 	shatter_time += platform_clock() - cpu_time;
 	return ret;
 }
 
-static void
-eat_line(FILE *f)
-{
-	int c;
-	while ((c = getc(f)) != '\n') {
-		if (c == EOF) die("unexpected end of file");
-	}
-}
 
-static void
-print_file(FILE *f)
-{
-	char buf[4096];
-	int c;
-	while ((c = fread(buf, 1, sizeof(buf), f))) {
-		fwrite(buf, 1, c, stdout);
-	}
-	if (ferror(f)) die("error reading file");
-	fclose(f);
-}
+// [[Rcpp::export]]
+List shatter_int(std::string filename, std::string sbp_file, std::string gfile) {
 
-int entry_main(int argc, char **argv) {
-	const char *filename;
 	struct amorph_graph *g;
 	struct saucy *s;
 	struct saucy_stats stats;
 	struct dimacs_info *info;
-	FILE *f;
-	int c, n, orig_clauses;
+	FILE *f = NULL;
+	int n, orig_clauses;
 	long cpu_time;
 
-	parse_arguments(&argc, &argv, options);
-	if (argc > 1) die("trailing arguments");
-	if (argc < 1) die("missing filename");
-	filename = *argv;
+	sbpfile = sbp_file.c_str();
 
-	g = amorph_read_dimacs(filename);
-	if (!g) die("unable to read CNF input file");
-	info = g->data;
+	g = amorph_read_dimacs(filename.c_str());
+	if (!g) {
+	  Rf_warning("unable to read CNF input file");
+	  return(NULL);
+	}
+
+	info = (struct dimacs_info *)g->data;
 
 	n = g->sg.n;
 	vars = orig_vars = info->vars;
 	clauses = orig_clauses = info->orig_clauses;
 
-	supp = malloc(vars * sizeof(int));
-	p = malloc((vars+1) * sizeof(int));
-	marks = calloc(vars, sizeof(char));
-	if (!supp || !p || !marks) bang("can't allocate memory");
+	supp = (int *)malloc(vars * sizeof(int));
+	p = (int *)malloc((vars+1) * sizeof(int));
+	marks = (char *)calloc(vars, sizeof(char));
+	if (!supp || !p || !marks) {
+	  Rf_warning("can't allocate memory");
+	  return(NULL);
+	}
+
+	f = fopen(gfile.c_str(), "w+");
 
 	sbp = sbpfile ? fopen(sbpfile, "w+") : tmpfile();
-	if (!sbp) bang("can't create SBP file");
+	if (!sbp) {
+	  Rf_warning("can't create SBP file");
+	  return(NULL);
+	}
 
 	s = saucy_alloc(n);
-	if (!s) die("unable to initialize saucy");
+	if (!s) {
+	  Rf_warning("unable to initialize saucy");
+	  return(NULL);
+	}
 
 	cpu_time = platform_clock();
+
 	saucy_search(s, &g->sg, 0, g->colors, time_shatter, 0, &stats);
 	cpu_time = platform_clock() - cpu_time;
 
 	saucy_free(s);
 
-	if (!quiet_mode) {
-		f = fopen(filename, "r");
-		if (!f) bang("unable to reopen CNF file");
+	g->stats(g, f);
+	fclose(f);
 
-		while ((c = getc(f)) == 'c') {
-			eat_line(f);
-		}
-		if (c != 'p') die("can't read CNF header");
-		eat_line(f);
-
-		printf("p cnf %d %d\n", vars, clauses);
-		print_file(f);
-
-		errno = 0;
-		rewind(sbp);
-		if (errno != 0) bang("rewinding SBP file failed");
-
-		print_file(sbp);
-	}
-
-	if (stats_mode) {
-		f = quiet_mode ? stdout : stderr;
-		fprintf(f, "----------- formula info ----------\n");
-		fprintf(f, "input file = %s\n", filename);
-		g->stats(g, f);
-		fprintf(f, "-------- symmetry discovery -------\n");
-		fprintf(f, "vertices = %d\n", g->sg.n);
-		fprintf(f, "edges = %d\n", g->sg.e);
-		fprintf(f, "group size = %fe%d\n",
-			stats.grpsize_base, stats.grpsize_exp);
-		fprintf(f, "nodes = %d\n", stats.nodes);
-		fprintf(f, "generators = %d\n", stats.gens);
-		fprintf(f, "bad nodes = %d\n", stats.bads);
-		fprintf(f, "discovery time (s) = %.2f\n",
-			divide(cpu_time - shatter_time,
-				PLATFORM_CLOCKS_PER_SEC));
-		fprintf(f, "----------- shatter info ----------\n");
-		fprintf(f, "symmetry breaking clauses = %d\n",
-			clauses - orig_clauses);
-		fprintf(f, "additional variables = %d\n",
-			vars - orig_vars);
-		fprintf(f, "additional literals = %d\n", literals);
-		fprintf(f, "consistency violations = %d\n", violations);
-		fprintf(f, "SBP generation time (s) = %.2f\n",
-			divide(shatter_time, PLATFORM_CLOCKS_PER_SEC));
-		fprintf(f, "total time (s) = %.2f\n",
-			divide(cpu_time, PLATFORM_CLOCKS_PER_SEC));
-	}
+	Rcpp::List ret = Rcpp::List::create(
+    _["input_file"] = filename,
+    _["vertices"] = g->sg.n,
+    _["edges"] = g->sg.e,
+    _["group_size_base"] = stats.grpsize_base,
+    _["group_size_exp"] =  stats.grpsize_exp,
+    _["nodes"] = stats.nodes,
+    _["generators"] = stats.gens,
+    _["bad_nodes"] = stats.bads,
+    _["discovery_time"] = divide(cpu_time - shatter_time, PLATFORM_CLOCKS_PER_SEC),
+    _["symmetry_breaking_clauses"] = clauses - orig_clauses,
+    _["additional_variables"] = vars - orig_vars,
+    _["additional_literals"] = literals,
+    _["consistency_violations"] = violations,
+    _["sbp_generation_time"] = divide(shatter_time, PLATFORM_CLOCKS_PER_SEC),
+    _["total_time"] = divide(cpu_time, PLATFORM_CLOCKS_PER_SEC)
+	);
 
 	g->free(g);
-	return 0;
+
+	return(ret);
+
 }

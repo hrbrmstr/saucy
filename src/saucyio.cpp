@@ -10,6 +10,7 @@
  */
 
 #include <Rcpp.h>
+#include <string>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -135,7 +136,7 @@ dupe_check(int n, int *adj, int *edg)
 	int i, j, self_loop_ctr;
 	int *dupe_tmp = (int *)calloc(n, sizeof(int));
 	if (!dupe_tmp) {
-		warn("can't allocate memory");
+		Rf_warning("can't allocate memory");
 		free(dupe_tmp);
 		return 2;
 	}
@@ -151,7 +152,7 @@ dupe_check(int n, int *adj, int *edg)
 			if (edg[j] == i) {
 				++self_loop_ctr;
 				if (self_loop_ctr > 2) {
-					warn("duplicate edge in input");
+					Rf_warning("duplicate edge in input");
 					free(dupe_tmp);
 					return 1;
 				}
@@ -162,7 +163,7 @@ dupe_check(int n, int *adj, int *edg)
 			 * a valid vertex index.
 			 */
 			else if (dupe_tmp[edg[j]] == i+1) {
-				warn("duplicate edge in input");
+				Rf_warning("duplicate edge in input");
 				free(dupe_tmp);
 				return 1;
 			}
@@ -239,11 +240,11 @@ amorph_read(const char *filename, int digraph)
 
 		/* Simple input validation: check vertex values */
 		if (j >= n || j < 0) {
-			warn("invalid vertex in input: %d", j);
+			Rf_warning((std::string("invalid vertex in input: ") + std::to_string(j)).c_str());
 			goto out_free;
 		}
 		if (k >= n || k < 0) {
-			warn("invalid vertex in input: %d", k);
+			Rf_warning((std::string("invalid vertex in input: ") + std::to_string(k)).c_str());
 			goto out_free;
 		}
 
@@ -451,11 +452,11 @@ static int dimacs_header(gzFile f, int *v, int *nc) {
 		}
 	}
 	if (c != 'p' || !verify(f, " cnf ")) {
-		warn("invalid DIMACS header");
+		Rf_warning("invalid DIMACS header");
 		return 0;
 	}
 	if (!read_int(f, v) || !read_int(f, nc)) {
-		warn("invalid DIMACS header");
+		Rf_warning("invalid DIMACS header");
 		return 0;
 	}
 	return 1;

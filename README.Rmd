@@ -20,9 +20,10 @@ I just wrapped code. http://vlsicad.eecs.umich.edu/BK/SAUCY for orig ref. The fo
 
 ## What's Inside The Tin
 
-
-
 The following functions are implemented:
+
+- `saucy`:	Searching for Automorphisms in Underlying CNF, yes?
+- `shatter`:	Identifies Symmetries in CNF Instances
 
 ## Installation
 
@@ -65,4 +66,14 @@ graph2 <- saucy::saucy(system.file("extdata", "graphfile2", package="saucy"))
 graph2
 
 str(graph2)
+```
+
+### Shatter
+
+```{r}
+s1 <- saucy::shatter(system.file("extdata", "battleship.cnf", package="saucy"))
+
+s1
+
+str(s1)
 ```

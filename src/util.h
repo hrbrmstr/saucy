@@ -11,10 +11,6 @@ extern "C" {
 #define _inline static __attribute__((always_inline,unused))
 #endif
 
-void warn(const char *fmt, ...) __attribute__((format(printf,1,2)));
-void die(const char *fmt, ...) __attribute__((noreturn, format(printf,1,2)));
-void bang(const char *fmt, ...) __attribute__((noreturn, format(printf,1,2)));
-
 struct option {
 	char *name;
 	char letter;
@@ -22,9 +18,6 @@ struct option {
 	void (*callback)(char *);
 	char *description;
 };
-
-void print_options(const struct option *options);
-void parse_arguments(int *argc, char ***argv, const struct option *options);
 
 _inline int
 integer_compare(const void *a, const void *b)

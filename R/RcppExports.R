@@ -5,3 +5,7 @@ saucy_int <- function(filename, mode, timeout, rpt) {
     .Call('_saucy_saucy_int', PACKAGE = 'saucy', filename, mode, timeout, rpt)
 }
 
+shatter_int <- function(filename, sbp_file, gfile) {
+    .Call('_saucy_shatter_int', PACKAGE = 'saucy', filename, sbp_file, gfile)
+}
+

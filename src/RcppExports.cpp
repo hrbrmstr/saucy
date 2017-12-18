@@ -19,9 +19,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// shatter_int
+List shatter_int(std::string filename, std::string sbp_file, std::string gfile);
+RcppExport SEXP _saucy_shatter_int(SEXP filenameSEXP, SEXP sbp_fileSEXP, SEXP gfileSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type sbp_file(sbp_fileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type gfile(gfileSEXP);
+    rcpp_result_gen = Rcpp::wrap(shatter_int(filename, sbp_file, gfile));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_saucy_saucy_int", (DL_FUNC) &_saucy_saucy_int, 4},
+    {"_saucy_shatter_int", (DL_FUNC) &_saucy_shatter_int, 3},
     {NULL, NULL, 0}
 };
 
